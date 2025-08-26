@@ -1,0 +1,6 @@
+Database Type,Read Performance,Write Performance,Scalability,Consistency,Best Use Case,Cost
+DynamoDB (NoSQL),Excellent (single-digit ms),Excellent,Auto-scaling horizontal,Eventually consistent,"Primary storage, high scale",Pay per use
+MongoDB (NoSQL),Good (10-50ms),Good,Manual horizontal,Configurable,Complex queries needed,Infrastructure based
+Redis (In-Memory),Excellent (<1ms),Excellent,Limited by memory,Strong consistency,Cache layer only,Memory based
+PostgreSQL (SQL),Good (10-100ms),Good,Vertical primarily,ACID compliant,Complex transactions,Infrastructure based
+Cassandra (NoSQL),Excellent (single-digit ms),Excellent,Linear horizontal,Tunable consistency,Multi-region deployment,Infrastructure based

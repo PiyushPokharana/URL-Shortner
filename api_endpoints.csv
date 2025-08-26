@@ -1,0 +1,7 @@
+Endpoint,Description,Request Body,Response,Authentication
+POST /shorten,Create a new shortened URL,"{""longUrl"": ""string"", ""customAlias"": ""string"", ""expirationDate"": ""ISO8601""}","{""shortUrl"": ""string"", ""shortCode"": ""string""}",API Key (optional)
+GET /{shortCode},Redirect to original URL,None,302 Redirect or 404 Not Found,None
+GET /analytics/{shortCode},Get click analytics for URL,None,"{""clicks"": number, ""uniqueClicks"": number, ""clicksByDay"": []}",API Key required
+DELETE /{shortCode},Delete a shortened URL,None,204 No Content or 404 Not Found,API Key required
+PUT /{shortCode},Update URL or expiration,"{""longUrl"": ""string"", ""expirationDate"": ""ISO8601""}","{""shortUrl"": ""string"", ""shortCode"": ""string""}",API Key required
+GET /user/{userId}/urls,List user's shortened URLs,None,"[{""shortCode"": ""string"", ""longUrl"": ""string"", ""clicks"": number}]",API Key required

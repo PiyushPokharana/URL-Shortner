@@ -1,0 +1,6 @@
+Cloud Provider,Key Services,Scalability,Pricing Model,Complexity,Best For
+AWS,"Lambda, API Gateway, DynamoDB, CloudFront","Auto-scaling, global",Pay per request/storage,High (many services),"Enterprise, high scale"
+Google Cloud Platform,"Cloud Functions, Cloud Endpoints, Firestore, Cloud CDN","Auto-scaling, global",Pay per request/storage,Medium,Google ecosystem integration
+Microsoft Azure,"Azure Functions, API Management, Cosmos DB, Azure CDN","Auto-scaling, global",Pay per request/storage,High (many services),Microsoft ecosystem
+Heroku,"Dynos, Heroku Postgres, Heroku Redis",Manual scaling,Monthly dyno hours,Low (simple deployment),Rapid prototyping
+Vercel,"Serverless Functions, Edge Network","Auto-scaling, edge",Pay per invocation,Low (simple deployment),Frontend developers

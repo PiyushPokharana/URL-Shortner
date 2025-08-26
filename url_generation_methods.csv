@@ -1,0 +1,6 @@
+Method,Description,Collision Risk,Predictability,Performance,Scalability,Storage Efficiency
+Base62 Encoding,"Convert unique ID to base62 (A-Z, a-z, 0-9)",None (if unique ID),High (sequential),High,Excellent,Excellent (deduplication)
+MD5 Hashing,Hash original URL and take first 7 characters,Medium (hash collisions),Low,Medium (requires collision check),Good,Good (deduplication)
+Sequential Counter,"Use auto-incrementing counter, encode to base62",None,High (sequential),High,Good (single point bottleneck),Excellent (deduplication)
+Random UUID,Generate random unique identifier,Very Low,None,High,Excellent,Poor (no deduplication)
+Hybrid Approach,Combine sequential ID with random salt,None,Low,Medium,Excellent,Good

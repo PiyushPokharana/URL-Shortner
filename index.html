@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener Service Demo</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>URL Shortener Service Demo</h1>
+            <p class="header-subtitle">Demonstrating scalable system design and cloud deployment concepts</p>
+        </header>
+
+        <!-- Main URL Shortening Interface -->
+        <section class="main-section">
+            <div class="card">
+                <div class="card__header">
+                    <h2>Shorten Your URL</h2>
+                    <p>Enter a long URL to generate a short, shareable link</p>
+                </div>
+                <div class="card__body">
+                    <form id="shortenForm" class="shorten-form">
+                        <div class="form-group">
+                            <label for="longUrl" class="form-label">Long URL *</label>
+                            <input type="url" id="longUrl" class="form-control" placeholder="https://example.com/very-long-url" required>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="customAlias" class="form-label">Custom Alias (Optional)</label>
+                                <input type="text" id="customAlias" class="form-control" placeholder="my-link" maxlength="20">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="expirationDate" class="form-label">Expiration Date (Optional)</label>
+                                <input type="datetime-local" id="expirationDate" class="form-control">
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn--primary btn--lg">
+                            <span id="submitText">Shorten URL</span>
+                            <div id="loadingSpinner" class="spinner hidden"></div>
+                        </button>
+                    </form>
+
+                    <!-- Result Display -->
+                    <div id="resultContainer" class="result-container hidden">
+                        <div class="result-card">
+                            <h3>URL Shortened Successfully!</h3>
+                            <div class="url-result">
+                                <label class="form-label">Short URL:</label>
+                                <div class="copy-container">
+                                    <input type="text" id="shortUrlResult" class="form-control" readonly>
+                                    <button type="button" id="copyButton" class="btn btn--outline">Copy</button>
+                                </div>
+                            </div>
+                            
+                            <div class="url-details">
+                                <div class="detail-item">
+                                    <strong>Short Code:</strong> <span id="shortCode"></span>
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Original URL:</strong> <span id="originalUrl"></span>
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Created:</strong> <span id="createdAt"></span>
+                                </div>
+                                <div class="detail-item" id="expirationInfo" style="display: none;">
+                                    <strong>Expires:</strong> <span id="expiresAt"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- URL Redirect Testing -->
+        <section class="redirect-section">
+            <div class="card">
+                <div class="card__header">
+                    <h2>Test URL Redirection</h2>
+                    <p>Simulate the redirect functionality of shortened URLs</p>
+                </div>
+                <div class="card__body">
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="testCode" class="form-label">Short Code</label>
+                            <input type="text" id="testCode" class="form-control" placeholder="Enter short code (e.g., abc123)">
+                        </div>
+                        <div class="form-group">
+                            <button type="button" id="testRedirectButton" class="btn btn--secondary">Test Redirect</button>
+                        </div>
+                    </div>
+                    
+                    <div id="redirectResult" class="redirect-result hidden">
+                        <div class="redirect-card">
+                            <h4>Redirect Information</h4>
+                            <div class="redirect-details">
+                                <div class="detail-item">
+                                    <strong>Redirects to:</strong> <a id="redirectUrl" href="#" target="_blank"></a>
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Total Clicks:</strong> <span id="clickCount"></span>
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Created:</strong> <span id="redirectCreated"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analytics Dashboard -->
+        <section class="analytics-section">
+            <div class="card">
+                <div class="card__header">
+                    <h2>Analytics Dashboard</h2>
+                    <p>Real-time statistics and usage insights</p>
+                </div>
+                <div class="card__body">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalUrls">0</div>
+                            <div class="stat-label">Total URLs</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalClicks">0</div>
+                            <div class="stat-label">Total Clicks</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="avgClicks">0</div>
+                            <div class="stat-label">Avg Clicks</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="todayClicks">0</div>
+                            <div class="stat-label">Today's Clicks</div>
+                        </div>
+                    </div>
+
+                    <div class="charts-container">
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <h3>Clicks Over Time</h3>
+                            <canvas id="clicksChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="top-urls">
+                        <h3>Most Popular URLs</h3>
+                        <div id="popularUrls" class="popular-list"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- URL Management -->
+        <section class="management-section">
+            <div class="card">
+                <div class="card__header">
+                    <h2>URL Management</h2>
+                    <p>View and manage all your shortened URLs</p>
+                </div>
+                <div class="card__body">
+                    <div class="management-controls">
+                        <div class="search-container">
+                            <input type="text" id="searchUrls" class="form-control" placeholder="Search URLs...">
+                        </div>
+                    </div>
+                    
+                    <div id="urlList" class="url-list"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- System Architecture -->
+        <section class="architecture-section">
+            <div class="card">
+                <div class="card__header">
+                    <h2>System Architecture Overview</h2>
+                    <p>Scalable cloud deployment architecture</p>
+                </div>
+                <div class="card__body">
+                    <div class="architecture-image">
+                        <img src="https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/a23699fbe370fe6872a0c099c34f7743/924aa189-f808-47d0-819e-eed6d657e4b8/aa06698a.png" alt="URL Shortener System Architecture" />
+                        <p class="architecture-caption">System Architecture Diagram showing load balancing, API gateway, application services, caching layer, and database management for a scalable cloud-deployed URL shortener service.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast hidden">
+        <span id="toastMessage"></span>
+    </div>
+
+    <!-- Modal for URL Details -->
+    <div id="urlModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">URL Details</h3>
+                <button type="button" id="closeModal" class="close-button">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
