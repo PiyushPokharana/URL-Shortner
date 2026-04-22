@@ -1,0 +1,46 @@
+{
+  "name": "url-shortener-service",
+  "version": "1.0.0",
+  "description": "Production-style URL shortener service with Node.js, Express, PostgreSQL, and Redis.",
+  "author": "Piyush Pokharana",
+  "license": "ISC",
+  "keywords": [
+    "url-shortener",
+    "nodejs",
+    "express",
+    "postgresql",
+    "redis",
+    "backend"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PiyushPokharana/URL-Shortner-Demo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/PiyushPokharana/URL-Shortner-Demo/issues"
+  },
+  "homepage": "https://github.com/PiyushPokharana/URL-Shortner-Demo#readme",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "lint": "eslint src/**/*.js",
+    "format": "prettier --write .",
+    "test": "echo \"No tests yet\""
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "helmet": "^8.1.0",
+    "ioredis": "^5.10.1",
+    "pg": "^8.20.0",
+    "pino": "^10.3.1",
+    "pino-http": "^11.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.17.0",
+    "nodemon": "^3.1.14",
+    "prettier": "^3.8.3"
+  }
+}
