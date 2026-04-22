@@ -4,10 +4,12 @@ const logger = require("./config/logger");
 const { connectDatabase, disconnectDatabase } = require("./config/database");
 const { connectRedis, disconnectRedis } = require("./config/redis");
 const { initializeUrlModel } = require("./models/url.model");
+const { initializeClickModel } = require("./models/click.model");
 
 async function bootstrap() {
     await connectDatabase();
     await initializeUrlModel();
+    await initializeClickModel();
     await connectRedis();
 
     const server = app.listen(env.port, () => {

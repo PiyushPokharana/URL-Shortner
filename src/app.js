@@ -9,6 +9,7 @@ const logger = require("./config/logger");
 const env = require("./config/env");
 const notFoundHandler = require("./middleware/not-found");
 const errorHandler = require("./middleware/error-handler");
+const rateLimitMiddleware = require("./middleware/rate-limit");
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(
 );
 app.use(express.json());
 app.use(pinoHttp({ logger }));
+app.use(rateLimitMiddleware);
 
 app.use("/api", healthRoutes);
 app.use("/api", urlRoutes);

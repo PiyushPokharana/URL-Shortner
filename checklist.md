@@ -4,10 +4,11 @@ This checklist turns the phase-wise execution plan into actionable tasks.
 
 ## Current Progress Snapshot (as of 2026-04-22)
 
-- Completed phases: **3 / 10**
-- Partially completed phases: **1 / 10**
-  - Phase 4 (Analytics): Partial (frontend dashboard simulation)
-- Not started phases: **6 / 10**
+- Completed phases: **6 / 10**
+- Partially completed phases: **2 / 10**
+  - Phase 8 (Deployment): Partial (assets ready, live deployment pending)
+  - Phase 9 (README): Partial (polished and metrics included, final interview iteration pending)
+- Not started phases: **2 / 10**
 
 ### Demo Features Implemented in This Repo
 
@@ -24,21 +25,23 @@ This checklist turns the phase-wise execution plan into actionable tasks.
 - [x] Real backend API server (Node.js/Fastify + Express routes)
 - [x] PostgreSQL persistence
 - [x] Redis caching
-- [ ] Rate limiting
+- [x] Rate limiting
+- [x] Backend click analytics persistence and metrics endpoint
+- [x] Optional geo data enrichment (header-based)
 - [ ] Queue workers (BullMQ)
-- [ ] Automated tests (Jest/Supertest)
-- [ ] Deployment artifacts (`Dockerfile`, `.env.example`) and live backend
+- [x] Automated tests (Jest/Supertest)
+- [ ] Live backend deployment (managed cloud)
 
 ## Project Timeline
 
 - [x] Foundation (Phase 0): 1 day
 - [x] Core URL Shortener (Phase 1): 2 days
-- [ ] Redirect + Cache (Phase 2): 2 days
-- [ ] Rate Limiting (Phase 3): 1 day
-- [ ] Analytics (Phase 4): 2-3 days
+- [x] Redirect + Cache (Phase 2): 2 days
+- [x] Rate Limiting (Phase 3): 1 day
+- [x] Analytics (Phase 4): 2-3 days
 - [ ] Background Workers (Phase 5): 2 days
 - [ ] Advanced Engineering (Phase 6): 2 days
-- [ ] Testing + Load Test (Phase 7): 2 days
+- [x] Testing + Load Test (Phase 7): 2 days
 - [ ] Deployment (Phase 8): 2 days
 - [ ] README + Project Positioning (Phase 9): Ongoing, finalize at end
 
@@ -146,18 +149,25 @@ Goal: Make redirects fast with cache-first lookup.
 Goal: Add production-safe abuse protection.
 
 ### IP-Based Limiting
-- [ ] Implement Redis-based per-IP counter
-- [ ] Key format: `ip_address`
-- [ ] Counter TTL: 1 minute
+- [x] Implement Redis-based per-IP counter
+- [x] Key format: `ip_address`
+- [x] Counter TTL: 1 minute
 
 ### Enforcement
-- [ ] Define request threshold per minute
-- [ ] Return `429 Too Many Requests` when threshold exceeded
+- [x] Define request threshold per minute
+- [x] Return `429 Too Many Requests` when threshold exceeded
 
 ### Definition of Done
-- [ ] Normal traffic passes
-- [ ] Burst traffic from same IP gets limited
-- [ ] Proper `429` responses are returned
+- [x] Normal traffic passes
+- [x] Burst traffic from same IP gets limited
+- [x] Proper `429` responses are returned
+
+### Verification Evidence (2026-04-22)
+- [x] Automated verification script run: `node scripts/verify-rate-limit.js`
+- [x] Normal traffic status sequence observed: `200, 200, 200`
+- [x] Burst traffic status sequence observed: `200, 200, 429, 429, 429`
+- [x] Blocked response confirmed with `429`, body `{ "message": "Too Many Requests" }`, and headers: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`, `Retry-After`
+- [x] Window reset behavior confirmed (`afterResetStatus: 200`)
 
 ---
 
@@ -166,30 +176,30 @@ Goal: Add production-safe abuse protection.
 Goal: Track usage in a resume-worthy way.
 
 ### What to Track
-- [ ] Total clicks
-- [ ] Unique users (IP-based)
-- [ ] Timestamp
-- [ ] Optional geo data
+- [x] Total clicks
+- [x] Unique users (IP-based)
+- [x] Timestamp
+- [x] Optional geo data
 
 ### Architecture Decision
-- [ ] Avoid heavy analytics writes directly in redirect critical path
+- [x] Avoid heavy analytics writes directly in redirect critical path
 - [ ] Choose implementation path:
-  - [ ] Option A: Direct DB write (simple)
+  - [x] Option A: Direct DB write (simple)
   - [ ] Option B: Queue-based write with BullMQ (better)
 
 ### Database
-- [ ] Create `clicks` table:
-  - [ ] `id`
-  - [ ] `short_code`
-  - [ ] `ip_address`
-  - [ ] `timestamp`
+- [x] Create `clicks` table:
+  - [x] `id`
+  - [x] `short_code`
+  - [x] `ip_address`
+  - [x] `timestamp`
 
 ### API
-- [ ] Implement `GET /analytics/:shortCode`
+- [x] Implement `GET /analytics/:shortCode`
 
 ### Definition of Done
-- [ ] Click events are stored accurately
-- [ ] Analytics endpoint returns expected metrics
+- [x] Click events are stored accurately
+- [x] Analytics endpoint returns expected metrics
 
 ---
 
@@ -234,19 +244,25 @@ Goal: Add advanced features that separate this from basic CRUD projects.
 Goal: Prove correctness and performance.
 
 ### Automated Tests
-- [ ] Add API tests with Jest + Supertest
-- [ ] Cover shorten, redirect, rate limit, and analytics flows
+- [x] Add API tests with Jest + Supertest
+- [x] Cover shorten, redirect, and analytics flows (rate-limit has dedicated verification script)
 
 ### Load Testing
-- [ ] Add load test scripts with k6 or Artillery
+- [x] Add load test scripts with k6 or Artillery
 - [ ] Capture and document:
-  - [ ] Requests per second
-  - [ ] Latency (p50/p95/p99 if possible)
-  - [ ] Error rate
+  - [x] Requests per second
+  - [x] Latency (p50/p95/p99 if possible)
+  - [x] Error rate
 
 ### Definition of Done
-- [ ] Critical API flows are test-covered
-- [ ] Load test results are documented and reproducible
+- [x] Critical API flows are test-covered
+- [x] Load test results are documented and reproducible
+
+### Verification Evidence (2026-04-22)
+- [x] Automated tests executed successfully via `npm test` (5 tests, 2 suites)
+- [x] Load test executed via `npm run load:test`
+- [x] Evidence artifacts generated: `docs/load-test-report.json`, `docs/load-test-report.md`
+- [x] Observed metrics: avg RPS `3241`, latency p50 `8ms`, p95 `14ms`, p99 `16ms`, error rate `0`
 
 ---
 
@@ -260,8 +276,8 @@ Goal: Deploy a real, usable service.
 - [ ] Deploy Redis (Upstash/Redis Cloud)
 
 ### Deployment Assets
-- [ ] Add `Dockerfile`
-- [ ] Add `.env.example`
+- [x] Add `Dockerfile`
+- [x] Add `.env.example`
 
 ### Definition of Done
 - [ ] Public API is reachable
@@ -275,21 +291,21 @@ Goal: Deploy a real, usable service.
 Goal: Turn the project into a strong resume and interview asset.
 
 ### Must Include
-- [ ] Problem statement
-- [ ] Architecture diagram
-- [ ] Tech decisions (Why Redis, Why PostgreSQL)
-- [ ] Scaling strategy
-- [ ] Trade-offs
-- [ ] Performance metrics
+- [x] Problem statement
+- [x] Architecture diagram
+- [x] Tech decisions (Why Redis, Why PostgreSQL)
+- [x] Scaling strategy
+- [x] Trade-offs
+- [x] Performance metrics
 
 ### Resume/Interview Positioning
-- [ ] Explain read-heavy optimization strategy
-- [ ] Explain how Redis reduced DB load
-- [ ] Explain async analytics processing
-- [ ] Explain horizontal scalability approach
+- [x] Explain read-heavy optimization strategy
+- [x] Explain how Redis reduced DB load
+- [x] Explain async analytics processing
+- [x] Explain horizontal scalability approach
 
 ### Definition of Done
-- [ ] README is complete, clear, and recruiter-friendly
+- [x] README is complete, clear, and recruiter-friendly
 - [ ] You can confidently explain architecture and trade-offs in interviews
 
 ---
@@ -299,6 +315,6 @@ Goal: Turn the project into a strong resume and interview asset.
 - [ ] Caching is implemented and verified
 - [ ] Rate limiting is implemented and verified
 - [ ] Analytics is implemented and verified
-- [ ] Tests and load-test evidence are documented
+- [x] Tests and load-test evidence are documented
 - [ ] Deployment is live and stable
-- [ ] README is polished
+- [x] README is polished

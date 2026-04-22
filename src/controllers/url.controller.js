@@ -1,5 +1,7 @@
 const asyncHandler = require("../utils/async-handler");
-const { createShortUrl, resolveRedirectTarget } = require("../services/url.service");
+const { createShortUrl, resolveRedirectTarget, trackClickEvent } = require("../services/url.service");
+const { getShortCodeAnalytics } = require("../services/analytics.service");
+const { extractGeoDataFromHeaders } = require("../utils/geo");
 
 function getRequestDurationMs(startTime) {
     return Number(process.hrtime.bigint() - startTime) / 1e6;
@@ -26,10 +28,30 @@ const redirectShortUrl = asyncHandler(async (req, res) => {
     const startTime = process.hrtime.bigint();
     const shortCode = req.params.shortCode;
     let redirectSource = "unknown";
+    const requestIp = req.ip;
+    const geoData = extractGeoDataFromHeaders(req.headers);
 
     try {
         const redirectTarget = await resolveRedirectTarget(shortCode);
         redirectSource = redirectTarget.source;
+
+        // Record analytics without blocking redirect latency.
+        void trackClickEvent(shortCode, {
+            ipAddress: requestIp,
+            countryCode: geoData.countryCode,
+            countryName: geoData.countryName
+        }).catch((error) => {
+            req.log.warn(
+                {
+                    err: error,
+                    shortCode,
+                    ipAddress: requestIp,
+                    countryCode: geoData.countryCode,
+                    countryName: geoData.countryName
+                },
+                "Failed to record click analytics"
+            );
+        });
 
         res.redirect(302, redirectTarget.originalUrl);
     } finally {
@@ -44,7 +66,17 @@ const redirectShortUrl = asyncHandler(async (req, res) => {
     }
 });
 
+const getAnalytics = asyncHandler(async (req, res) => {
+    const analytics = await getShortCodeAnalytics(req.params.shortCode);
+
+    res.status(200).json({
+        message: "Analytics fetched",
+        data: analytics
+    });
+});
+
 module.exports = {
     shortenUrl,
-    redirectShortUrl
+    redirectShortUrl,
+    getAnalytics
 };

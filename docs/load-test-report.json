@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-04-22T17:42:08.029Z",
+  "targetUrl": "http://127.0.0.1:57784/api/health",
+  "durationSeconds": 10,
+  "connections": 30,
+  "requests": {
+    "averagePerSecond": 3241,
+    "p95PerSecond": 3601,
+    "total": 32400
+  },
+  "latency": {
+    "averageMs": 8.76,
+    "p50Ms": 8,
+    "p95Ms": 14,
+    "p99Ms": 16,
+    "maxMs": 49
+  },
+  "throughput": {
+    "averageBytesPerSecond": 3039232,
+    "totalBytes": 30391200
+  },
+  "non2xxResponses": 0,
+  "errors": 0,
+  "timeouts": 0
+}

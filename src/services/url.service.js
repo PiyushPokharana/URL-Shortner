@@ -4,6 +4,7 @@ const {
     findActiveUrlByShortCode,
     createUrlRecord
 } = require("../models/url.model");
+const { createClickEvent } = require("../models/click.model");
 const { encodeBase62 } = require("../utils/base62");
 const HttpError = require("../utils/http-error");
 const logger = require("../config/logger");
@@ -183,7 +184,34 @@ async function resolveRedirectTarget(shortCode) {
     };
 }
 
+async function trackClickEvent(shortCode, metadata = {}) {
+    if (!shortCode || typeof shortCode !== "string") {
+        throw new HttpError(400, "shortCode is required");
+    }
+
+    const ipAddress = metadata.ipAddress;
+
+    if (!ipAddress || typeof ipAddress !== "string") {
+        throw new HttpError(400, "ipAddress is required");
+    }
+
+    const normalizedShortCode = shortCode.trim();
+    const normalizedIpAddress = ipAddress.trim();
+
+    if (!normalizedShortCode || !normalizedIpAddress) {
+        throw new HttpError(400, "shortCode and ipAddress are required");
+    }
+
+    return createClickEvent({
+        shortCode: normalizedShortCode,
+        ipAddress: normalizedIpAddress,
+        countryCode: metadata.countryCode || null,
+        countryName: metadata.countryName || null
+    });
+}
+
 module.exports = {
     createShortUrl,
-    resolveRedirectTarget
+    resolveRedirectTarget,
+    trackClickEvent
 };
