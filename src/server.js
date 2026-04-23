@@ -5,12 +5,19 @@ const { connectDatabase, disconnectDatabase } = require("./config/database");
 const { connectRedis, disconnectRedis } = require("./config/redis");
 const { initializeUrlModel } = require("./models/url.model");
 const { initializeClickModel } = require("./models/click.model");
+const { warmShortCodeFilter } = require("./services/url.service");
+const {
+    startExpiredUrlCleanupJob,
+    stopExpiredUrlCleanupJob
+} = require("./services/cleanup.service");
 
 async function bootstrap() {
     await connectDatabase();
     await initializeUrlModel();
     await initializeClickModel();
     await connectRedis();
+    await warmShortCodeFilter();
+    startExpiredUrlCleanupJob();
 
     const server = app.listen(env.port, () => {
         logger.info({ port: env.port }, "Server is running");
@@ -20,6 +27,7 @@ async function bootstrap() {
         logger.info({ signal }, "Graceful shutdown started");
 
         server.close(async () => {
+            stopExpiredUrlCleanupJob();
             await Promise.allSettled([disconnectDatabase(), disconnectRedis()]);
             logger.info("Graceful shutdown complete");
             process.exit(0);

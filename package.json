@@ -23,7 +23,9 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
+    "start:worker": "node src/worker.js",
     "dev": "nodemon src/server.js",
+    "dev:worker": "nodemon src/worker.js",
     "lint": "eslint src/**/*.js",
     "format": "prettier --write .",
     "test": "jest --runInBand",
@@ -31,6 +33,7 @@
     "load:test": "node scripts/run-load-test.js"
   },
   "dependencies": {
+    "bullmq": "^5.76.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",

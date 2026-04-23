@@ -15,6 +15,12 @@ async function initializeUrlModel() {
         CREATE INDEX IF NOT EXISTS idx_urls_short_code
         ON urls (short_code);
     `);
+
+    await pool.query(`
+        CREATE INDEX IF NOT EXISTS idx_urls_expiry_at
+        ON urls (expiry_at)
+        WHERE expiry_at IS NOT NULL;
+    `);
 }
 
 async function getNextUrlId() {
@@ -67,10 +73,43 @@ async function createUrlRecord({ id, originalUrl, shortCode, expiryAt }) {
     return result.rows[0];
 }
 
+async function listAllShortCodes() {
+    const result = await pool.query(
+        `
+            SELECT short_code
+            FROM urls
+        `
+    );
+
+    return result.rows.map((row) => row.short_code);
+}
+
+async function deleteExpiredUrls(batchSize = 1000) {
+    const result = await pool.query(
+        `
+            DELETE FROM urls
+            WHERE ctid IN (
+                SELECT ctid
+                FROM urls
+                WHERE expiry_at IS NOT NULL
+                  AND expiry_at <= NOW()
+                ORDER BY expiry_at ASC
+                LIMIT $1
+            )
+            RETURNING short_code
+        `,
+        [batchSize]
+    );
+
+    return result.rows.map((row) => row.short_code);
+}
+
 module.exports = {
     initializeUrlModel,
     getNextUrlId,
     findUrlByShortCode,
     findActiveUrlByShortCode,
-    createUrlRecord
+    createUrlRecord,
+    listAllShortCodes,
+    deleteExpiredUrls
 };

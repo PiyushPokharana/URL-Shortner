@@ -1,7 +1,8 @@
 const asyncHandler = require("../utils/async-handler");
-const { createShortUrl, resolveRedirectTarget, trackClickEvent } = require("../services/url.service");
+const { createShortUrl, resolveRedirectTarget } = require("../services/url.service");
 const { getShortCodeAnalytics } = require("../services/analytics.service");
 const { extractGeoDataFromHeaders } = require("../utils/geo");
+const { enqueueClickAnalyticsJob } = require("../queues/analytics.queue");
 
 function getRequestDurationMs(startTime) {
     return Number(process.hrtime.bigint() - startTime) / 1e6;
@@ -29,27 +30,32 @@ const redirectShortUrl = asyncHandler(async (req, res) => {
     const shortCode = req.params.shortCode;
     let redirectSource = "unknown";
     const requestIp = req.ip;
+    const userAgent = req.get("user-agent") || null;
     const geoData = extractGeoDataFromHeaders(req.headers);
 
     try {
         const redirectTarget = await resolveRedirectTarget(shortCode);
         redirectSource = redirectTarget.source;
 
-        // Record analytics without blocking redirect latency.
-        void trackClickEvent(shortCode, {
+        // Queue analytics without blocking redirect latency.
+        void enqueueClickAnalyticsJob({
+            shortCode,
             ipAddress: requestIp,
+            userAgent,
             countryCode: geoData.countryCode,
-            countryName: geoData.countryName
+            countryName: geoData.countryName,
+            clickedAt: new Date().toISOString()
         }).catch((error) => {
             req.log.warn(
                 {
                     err: error,
                     shortCode,
                     ipAddress: requestIp,
+                    userAgent,
                     countryCode: geoData.countryCode,
                     countryName: geoData.countryName
                 },
-                "Failed to record click analytics"
+                "Failed to enqueue click analytics"
             );
         });
 

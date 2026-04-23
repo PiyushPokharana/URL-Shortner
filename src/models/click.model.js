@@ -6,6 +6,7 @@ async function initializeClickModel() {
             id BIGSERIAL PRIMARY KEY,
             short_code VARCHAR(64) NOT NULL,
             ip_address INET NOT NULL,
+            visitor_fingerprint VARCHAR(64) NULL,
             country_code VARCHAR(3) NULL,
             country_name VARCHAR(100) NULL,
             clicked_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -27,6 +28,11 @@ async function initializeClickModel() {
     `);
 
     await pool.query(`
+        ALTER TABLE clicks
+        ADD COLUMN IF NOT EXISTS visitor_fingerprint VARCHAR(64) NULL;
+    `);
+
+    await pool.query(`
         CREATE INDEX IF NOT EXISTS idx_clicks_short_code_clicked_at
         ON clicks (short_code, clicked_at DESC);
     `);
@@ -35,28 +41,35 @@ async function initializeClickModel() {
         CREATE INDEX IF NOT EXISTS idx_clicks_short_code_ip_address
         ON clicks (short_code, ip_address);
     `);
+
+    await pool.query(`
+        CREATE INDEX IF NOT EXISTS idx_clicks_short_code_visitor_fingerprint
+        ON clicks (short_code, visitor_fingerprint);
+    `);
 }
 
 async function createClickEvent({
     shortCode,
     ipAddress,
+    visitorFingerprint = null,
     countryCode = null,
     countryName = null,
     clickedAt = new Date()
 }) {
     const result = await pool.query(
         `
-            INSERT INTO clicks (short_code, ip_address, country_code, country_name, clicked_at)
-            VALUES ($1, $2::inet, $3, $4, $5)
+            INSERT INTO clicks (short_code, ip_address, visitor_fingerprint, country_code, country_name, clicked_at)
+            VALUES ($1, $2::inet, $3, $4, $5, $6)
             RETURNING
                 id,
                 short_code,
                 ip_address::text AS ip_address,
+                visitor_fingerprint,
                 country_code,
                 country_name,
                 clicked_at
         `,
-        [shortCode, ipAddress, countryCode, countryName, clickedAt]
+        [shortCode, ipAddress, visitorFingerprint, countryCode, countryName, clickedAt]
     );
 
     return result.rows[0];
@@ -67,7 +80,7 @@ async function getClickAnalyticsByShortCode(shortCode) {
         `
             SELECT
                 COUNT(*)::BIGINT AS total_clicks,
-                COUNT(DISTINCT ip_address)::BIGINT AS unique_users,
+                COUNT(DISTINCT COALESCE(visitor_fingerprint, ip_address::text))::BIGINT AS unique_users,
                 MIN(clicked_at) AS first_clicked_at,
                 MAX(clicked_at) AS last_clicked_at
             FROM clicks

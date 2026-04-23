@@ -6,20 +6,20 @@ jest.mock("../src/middleware/rate-limit", () => {
 
 jest.mock("../src/services/url.service", () => ({
     createShortUrl: jest.fn(),
-    resolveRedirectTarget: jest.fn(),
-    trackClickEvent: jest.fn()
+    resolveRedirectTarget: jest.fn()
 }));
 
 jest.mock("../src/services/analytics.service", () => ({
     getShortCodeAnalytics: jest.fn()
 }));
 
-const {
-    createShortUrl,
-    resolveRedirectTarget,
-    trackClickEvent
-} = require("../src/services/url.service");
+jest.mock("../src/queues/analytics.queue", () => ({
+    enqueueClickAnalyticsJob: jest.fn()
+}));
+
+const { createShortUrl, resolveRedirectTarget } = require("../src/services/url.service");
 const { getShortCodeAnalytics } = require("../src/services/analytics.service");
+const { enqueueClickAnalyticsJob } = require("../src/queues/analytics.queue");
 const app = require("../src/app");
 
 describe("API routes", () => {
@@ -49,7 +49,7 @@ describe("API routes", () => {
             originalUrl: "https://example.com",
             source: "cache"
         });
-        trackClickEvent.mockResolvedValue({ id: 1 });
+        enqueueClickAnalyticsJob.mockResolvedValue({ id: "job-1" });
 
         const response = await request(app)
             .get("/abc123")
@@ -58,12 +58,13 @@ describe("API routes", () => {
 
         expect(response.statusCode).toBe(302);
         expect(response.headers.location).toBe("https://example.com");
-        expect(trackClickEvent).toHaveBeenCalledWith(
-            "abc123",
+        expect(enqueueClickAnalyticsJob).toHaveBeenCalledWith(
             expect.objectContaining({
+                shortCode: "abc123",
                 ipAddress: expect.any(String),
                 countryCode: "IN",
-                countryName: "India"
+                countryName: "India",
+                clickedAt: expect.any(String)
             })
         );
     });

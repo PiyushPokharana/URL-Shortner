@@ -48,10 +48,29 @@ const env = {
         db: toNumber(process.env.REDIS_DB, 0),
         cacheTtlSeconds: toNumber(process.env.REDIS_CACHE_TTL_SECONDS, 3600)
     },
+    urlFilter: {
+        enabled: toBoolean(process.env.URL_FILTER_ENABLED, true),
+        bloomBits: toNumber(process.env.URL_FILTER_BLOOM_BITS, 8192),
+        bloomHashes: toNumber(process.env.URL_FILTER_BLOOM_HASHES, 4)
+    },
+    cleanup: {
+        enabled: toBoolean(process.env.URL_CLEANUP_ENABLED, true),
+        intervalSeconds: toNumber(process.env.URL_CLEANUP_INTERVAL_SECONDS, 300),
+        batchSize: toNumber(process.env.URL_CLEANUP_BATCH_SIZE, 1000),
+        runOnStartup: toBoolean(process.env.URL_CLEANUP_RUN_ON_STARTUP, true)
+    },
     rateLimit: {
         enabled: toBoolean(process.env.RATE_LIMIT_ENABLED, true),
         requestsPerMinute: toNumber(process.env.RATE_LIMIT_REQUESTS_PER_MINUTE, 120),
         windowSeconds: toNumber(process.env.RATE_LIMIT_WINDOW_SECONDS, 60)
+    },
+    queue: {
+        analyticsName: process.env.ANALYTICS_QUEUE_NAME || "analytics-clicks",
+        analyticsAttempts: Math.max(1, toNumber(process.env.ANALYTICS_QUEUE_ATTEMPTS, 5)),
+        analyticsBackoffMs: Math.max(100, toNumber(process.env.ANALYTICS_QUEUE_BACKOFF_MS, 1000)),
+        analyticsConcurrency: Math.max(1, toNumber(process.env.ANALYTICS_WORKER_CONCURRENCY, 5)),
+        removeOnComplete: Math.max(0, toNumber(process.env.ANALYTICS_QUEUE_REMOVE_ON_COMPLETE, 1000)),
+        removeOnFail: Math.max(0, toNumber(process.env.ANALYTICS_QUEUE_REMOVE_ON_FAIL, 5000))
     }
 };
 

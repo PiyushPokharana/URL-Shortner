@@ -2,13 +2,13 @@
 
 This checklist turns the phase-wise execution plan into actionable tasks.
 
-## Current Progress Snapshot (as of 2026-04-22)
+## Current Progress Snapshot (as of 2026-04-23)
 
-- Completed phases: **6 / 10**
+- Completed phases: **8 / 10**
 - Partially completed phases: **2 / 10**
   - Phase 8 (Deployment): Partial (assets ready, live deployment pending)
   - Phase 9 (README): Partial (polished and metrics included, final interview iteration pending)
-- Not started phases: **2 / 10**
+- Not started phases: **0 / 10**
 
 ### Demo Features Implemented in This Repo
 
@@ -28,7 +28,7 @@ This checklist turns the phase-wise execution plan into actionable tasks.
 - [x] Rate limiting
 - [x] Backend click analytics persistence and metrics endpoint
 - [x] Optional geo data enrichment (header-based)
-- [ ] Queue workers (BullMQ)
+- [x] Queue workers (BullMQ)
 - [x] Automated tests (Jest/Supertest)
 - [ ] Live backend deployment (managed cloud)
 
@@ -39,7 +39,7 @@ This checklist turns the phase-wise execution plan into actionable tasks.
 - [x] Redirect + Cache (Phase 2): 2 days
 - [x] Rate Limiting (Phase 3): 1 day
 - [x] Analytics (Phase 4): 2-3 days
-- [ ] Background Workers (Phase 5): 2 days
+- [x] Background Workers (Phase 5): 2 days
 - [ ] Advanced Engineering (Phase 6): 2 days
 - [x] Testing + Load Test (Phase 7): 2 days
 - [ ] Deployment (Phase 8): 2 days
@@ -185,7 +185,7 @@ Goal: Track usage in a resume-worthy way.
 - [x] Avoid heavy analytics writes directly in redirect critical path
 - [ ] Choose implementation path:
   - [x] Option A: Direct DB write (simple)
-  - [ ] Option B: Queue-based write with BullMQ (better)
+  - [x] Option B: Queue-based write with BullMQ (better)
 
 ### Database
 - [x] Create `clicks` table:
@@ -208,17 +208,24 @@ Goal: Track usage in a resume-worthy way.
 Goal: Demonstrate async processing and scalability mindset.
 
 ### Queue + Worker
-- [ ] Setup BullMQ with Redis
-- [ ] Push analytics events to queue
-- [ ] Implement worker to consume and store analytics
+- [x] Setup BullMQ with Redis
+- [x] Push analytics events to queue
+- [x] Implement worker to consume and store analytics
 
 ### Reliability
-- [ ] Add retries/backoff strategy for failed jobs
-- [ ] Add worker error logging
+- [x] Add retries/backoff strategy for failed jobs
+- [x] Add worker error logging
 
 ### Definition of Done
-- [ ] Redirect remains responsive while analytics are processed asynchronously
-- [ ] Queue and worker flow is stable under repeated load
+- [x] Redirect remains responsive while analytics are processed asynchronously
+- [x] Queue and worker flow is stable under repeated load
+
+### Verification Evidence (2026-04-22)
+- [x] BullMQ producer implemented in `src/queues/analytics.queue.js`
+- [x] Worker implemented in `src/workers/analytics.worker.js` and bootstrapped via `src/worker.js`
+- [x] Redirect path now enqueues analytics jobs (non-blocking) in `src/controllers/url.controller.js`
+- [x] Retry/backoff configured via env (`ANALYTICS_QUEUE_ATTEMPTS`, `ANALYTICS_QUEUE_BACKOFF_MS`)
+- [x] Worker error logging implemented on failed jobs
 
 ---
 
@@ -227,15 +234,15 @@ Goal: Demonstrate async processing and scalability mindset.
 Goal: Add advanced features that separate this from basic CRUD projects.
 
 ### Advanced Features
-- [ ] Add Bloom filter to reduce DB hits for invalid codes
-- [ ] Add cron job for expired URL cleanup
-- [ ] Implement stronger unique visitor logic
+- [x] Add Bloom filter to reduce DB hits for invalid codes
+- [x] Add cron job for expired URL cleanup
+- [x] Implement stronger unique visitor logic
 - [ ] Add custom domain support (optional)
 
 ### Definition of Done
-- [ ] Invalid-code traffic is optimized
-- [ ] Expired records are cleaned automatically
-- [ ] Unique visitor counting is correct and repeatable
+- [x] Invalid-code traffic is optimized
+- [x] Expired records are cleaned automatically
+- [x] Unique visitor counting is correct and repeatable
 
 ---
 
@@ -249,7 +256,7 @@ Goal: Prove correctness and performance.
 
 ### Load Testing
 - [x] Add load test scripts with k6 or Artillery
-- [ ] Capture and document:
+- [x] Capture and document:
   - [x] Requests per second
   - [x] Latency (p50/p95/p99 if possible)
   - [x] Error rate
@@ -259,7 +266,7 @@ Goal: Prove correctness and performance.
 - [x] Load test results are documented and reproducible
 
 ### Verification Evidence (2026-04-22)
-- [x] Automated tests executed successfully via `npm test` (5 tests, 2 suites)
+- [x] Automated tests executed successfully via `npm test` (9 tests, 4 suites)
 - [x] Load test executed via `npm run load:test`
 - [x] Evidence artifacts generated: `docs/load-test-report.json`, `docs/load-test-report.md`
 - [x] Observed metrics: avg RPS `3241`, latency p50 `8ms`, p95 `14ms`, p99 `16ms`, error rate `0`
@@ -312,9 +319,9 @@ Goal: Turn the project into a strong resume and interview asset.
 
 ## Final Quality Gate (Before Marking Project Complete)
 
-- [ ] Caching is implemented and verified
-- [ ] Rate limiting is implemented and verified
-- [ ] Analytics is implemented and verified
+- [x] Caching is implemented and verified
+- [x] Rate limiting is implemented and verified
+- [x] Analytics is implemented and verified
 - [x] Tests and load-test evidence are documented
 - [ ] Deployment is live and stable
 - [x] README is polished

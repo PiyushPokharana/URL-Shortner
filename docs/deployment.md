@@ -9,6 +9,12 @@ docker build -t url-shortener-service:latest .
 docker run --rm -p 4000:4000 --env-file .env url-shortener-service:latest
 ```
 
+For queue-based analytics, run worker separately:
+
+```bash
+npm run start:worker
+```
+
 ## 2) Required environment variables
 
 At minimum, set these in your platform:
@@ -36,6 +42,11 @@ At minimum, set these in your platform:
 - Backend runtime: Render or Railway
 - PostgreSQL: Supabase or managed Postgres from your cloud
 - Redis: Upstash Redis or Redis Cloud
+
+Worker deployment note:
+
+- Deploy worker as a separate process/service using command `npm run start:worker`
+- Keep API service command as `npm start`
 
 ## 4) Smoke checks after deployment
 
