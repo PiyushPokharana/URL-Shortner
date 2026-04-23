@@ -94,6 +94,7 @@ Required core variables:
 - `APP_NAME`
 - `NODE_ENV`
 - `PORT`
+- `TRUST_PROXY`
 - `CORS_ORIGIN`
 - `POSTGRES_HOST`
 - `POSTGRES_PORT`
@@ -165,6 +166,7 @@ curl http://localhost:4000/api/analytics/b
 - `npm run lint` - lint source files
 - `npm test` - run Jest + Supertest tests
 - `npm run load:test` - generate load-test evidence
+- `npm run smoke:test -- <base-url>` - run post-deploy smoke validation
 
 ## Testing Coverage
 
@@ -197,6 +199,11 @@ Deployment assets:
 - `Dockerfile`
 - `.env.example`
 - `docs/deployment.md`
+
+Production note:
+
+- Deploy API and worker as separate services from the same repo.
+- Set `TRUST_PROXY=1` on managed platforms behind reverse proxies.
 
 Quick container run:
 

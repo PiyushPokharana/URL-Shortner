@@ -28,21 +28,46 @@ function toBoolean(value, fallback) {
     return fallback;
 }
 
+function toTrustProxy(value) {
+    if (value === undefined || value === "") {
+        return false;
+    }
+
+    const normalized = String(value).trim().toLowerCase();
+    if (normalized === "true") {
+        return true;
+    }
+
+    if (normalized === "false") {
+        return false;
+    }
+
+    const parsed = Number(normalized);
+    if (Number.isInteger(parsed) && parsed >= 0) {
+        return parsed;
+    }
+
+    return value;
+}
+
 const env = {
     appName: process.env.APP_NAME || "url-shortener-service",
     nodeEnv: process.env.NODE_ENV || "development",
     port: toNumber(process.env.PORT, 4000),
+    trustProxy: toTrustProxy(process.env.TRUST_PROXY),
     corsOrigin: process.env.CORS_ORIGIN || "*",
     postgres: {
-        host: process.env.POSTGRES_HOST || "localhost",
+        url: process.env.DATABASE_URL,
+        host: process.env.POSTGRES_HOST,
         port: toNumber(process.env.POSTGRES_PORT, 5432),
-        user: process.env.POSTGRES_USER || "url_user",
-        password: process.env.POSTGRES_PASSWORD || "url_password",
-        database: process.env.POSTGRES_DB || "url_shortener",
+        user: process.env.POSTGRES_USER,
+        password: process.env.POSTGRES_PASSWORD,
+        database: process.env.POSTGRES_DB,
         ssl: process.env.POSTGRES_SSL === "true"
     },
     redis: {
-        host: process.env.REDIS_HOST || "localhost",
+        url: process.env.REDIS_URL,
+        host: process.env.REDIS_HOST,
         port: toNumber(process.env.REDIS_PORT, 6379),
         password: process.env.REDIS_PASSWORD || "",
         db: toNumber(process.env.REDIS_DB, 0),

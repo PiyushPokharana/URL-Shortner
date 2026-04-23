@@ -13,6 +13,10 @@ const rateLimitMiddleware = require("./middleware/rate-limit");
 
 const app = express();
 
+if (env.trustProxy !== false) {
+    app.set("trust proxy", env.trustProxy);
+}
+
 app.use(helmet());
 app.use(
     cors({

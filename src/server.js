@@ -19,8 +19,10 @@ async function bootstrap() {
     await warmShortCodeFilter();
     startExpiredUrlCleanupJob();
 
-    const server = app.listen(env.port, () => {
-        logger.info({ port: env.port }, "Server is running");
+    const PORT = process.env.PORT || 4000;
+
+    const server = app.listen(PORT, () => {
+        logger.info({ port: Number(PORT) }, "Server is running");
     });
 
     const shutdown = async (signal) => {

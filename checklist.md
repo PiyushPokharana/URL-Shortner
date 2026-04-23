@@ -283,13 +283,20 @@ Goal: Deploy a real, usable service.
 - [ ] Deploy Redis (Upstash/Redis Cloud)
 
 ### Deployment Assets
-- [x] Add `Dockerfile`
+- [x] Add hardened `Dockerfile` (healthcheck + non-root user)
 - [x] Add `.env.example`
+- [x] Add deployment runbook `docs/deployment.md`
+- [x] Add production smoke test script `scripts/smoke-test.js`
 
 ### Definition of Done
 - [ ] Public API is reachable
 - [ ] All dependent services are connected in production
 - [ ] Basic smoke tests pass in production
+
+### Verification Evidence (2026-04-23)
+- [x] Deployment docs expanded for Render/Railway API + worker topology
+- [x] Added `TRUST_PROXY` env support for reverse-proxy deployments
+- [x] Added `npm run smoke:test -- https://<domain>` for post-deploy validation
 
 ---
 

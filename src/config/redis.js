@@ -2,14 +2,21 @@ const Redis = require("ioredis");
 const env = require("./env");
 const logger = require("./logger");
 
-const redis = new Redis({
-    host: env.redis.host,
-    port: env.redis.port,
-    password: env.redis.password || undefined,
-    db: env.redis.db,
+const redisConfig = {
     maxRetriesPerRequest: 3,
     lazyConnect: true
-});
+};
+
+const redis = env.redis.url
+    ? new Redis(env.redis.url, redisConfig)
+    : new Redis({
+        host: env.redis.host,
+        port: env.redis.port,
+        password: env.redis.password || undefined,
+        db: env.redis.db,
+        maxRetriesPerRequest: 3,
+        lazyConnect: true
+    });
 
 redis.on("error", (error) => {
     logger.error({ err: error }, "Redis error");

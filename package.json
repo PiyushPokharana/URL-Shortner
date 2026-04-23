@@ -20,9 +20,9 @@
     "url": "https://github.com/PiyushPokharana/URL-Shortner-Demo/issues"
   },
   "homepage": "https://github.com/PiyushPokharana/URL-Shortner-Demo#readme",
-  "main": "src/server.js",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node src/server.js",
+    "start": "node src/index.js",
     "start:worker": "node src/worker.js",
     "dev": "nodemon src/server.js",
     "dev:worker": "nodemon src/worker.js",
@@ -30,7 +30,8 @@
     "format": "prettier --write .",
     "test": "jest --runInBand",
     "test:watch": "jest --watch",
-    "load:test": "node scripts/run-load-test.js"
+    "load:test": "node scripts/run-load-test.js",
+    "smoke:test": "node scripts/smoke-test.js"
   },
   "dependencies": {
     "bullmq": "^5.76.0",
