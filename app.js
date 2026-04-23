@@ -348,6 +348,12 @@ class UrlShortenerApp {
         totalClicks.textContent = currentTotalClicks.toLocaleString();
         avgClicks.textContent = avgClicksValue.toLocaleString();
         todayClicks.textContent = todayClicksValue.toLocaleString();
+        
+        // Update hero stats
+        const heroTotalUrls = document.getElementById('heroTotalUrls');
+        const heroTotalClicks = document.getElementById('heroTotalClicks');
+        if (heroTotalUrls) heroTotalUrls.textContent = this.urls.length.toLocaleString();
+        if (heroTotalClicks) heroTotalClicks.textContent = currentTotalClicks.toLocaleString();
     }
 
     updateChart() {
@@ -373,47 +379,43 @@ class UrlShortenerApp {
                 datasets: [{
                     label: 'Clicks',
                     data: data,
-                    borderColor: '#1FB8CD',
-                    backgroundColor: 'rgba(31, 184, 205, 0.1)',
-                    borderWidth: 3,
+                    borderColor: '#818cf8',
+                    backgroundColor: 'rgba(99, 102, 241, 0.08)',
+                    borderWidth: 2.5,
                     fill: true,
                     tension: 0.4,
-                    pointBackgroundColor: '#1FB8CD',
-                    pointBorderColor: '#ffffff',
+                    pointBackgroundColor: '#818cf8',
+                    pointBorderColor: '#12121a',
                     pointBorderWidth: 2,
-                    pointRadius: 6
+                    pointRadius: 5,
+                    pointHoverRadius: 7
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        display: false
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(18,18,26,0.95)',
+                        titleColor: '#f0f0f5',
+                        bodyColor: '#8b8b9e',
+                        borderColor: 'rgba(255,255,255,0.08)',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: false
                     }
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.1)'
-                        },
-                        ticks: {
-                            color: '#626C71'
-                        }
+                        grid: { color: 'rgba(255,255,255,0.04)', drawBorder: false },
+                        ticks: { color: '#5a5a6e', font: { size: 11 } }
                     },
                     x: {
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.1)'
-                        },
-                        ticks: {
-                            color: '#626C71'
-                        }
-                    }
-                },
-                elements: {
-                    point: {
-                        hoverRadius: 8
+                        grid: { display: false },
+                        ticks: { color: '#5a5a6e', font: { size: 11 } }
                     }
                 }
             }
